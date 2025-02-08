@@ -1,0 +1,23 @@
+{
+    "manifest_version": 3,
+    "name": "Video Sync Extension",
+    "version": "1.0",
+    "permissions": ["tabs", "scripting", "storage"],
+    "host_permissions": [
+      "https://www.youtube.com/*",
+      "https://www.netflix.com/*"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.youtube.com/*", "https://www.netflix.com/*"],
+        "js": ["content.js"]
+      }
+    ]
+  }
+  
