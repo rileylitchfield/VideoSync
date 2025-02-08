@@ -1,6 +1,6 @@
 # Video Sync Extension
 
-Video Sync is a Chrome extension that allows you to control video playback across multiple tabs simultaneously. Whether you're watching videos on YouTube or Netflix, the extension lets you play, pause, or seek through videos on all supported tabs at the same time from a central popup.
+VideoSync is a Chrome extension that allows you to control video playback across multiple tabs simultaneously. Whether you're watching videos on YouTube or Netflix, the extension lets you play, pause, or seek through videos on all supported tabs at the same time from a central popup.
 
 ## Features
 
