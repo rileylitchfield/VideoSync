@@ -62,7 +62,10 @@ VideoSync is a Chrome extension designed to synchronize video playback between N
   - Handle the opposite case where the user skips too far ahead, causing the computed YouTube time to exceed the video's duration. Auto-sync should similarly be disabled with appropriate user feedback.
 
 - **Sync Toggle Button:**  
-  Replace the current "Sync" button with a toggle button that clearly indicates when synchronization is active or inactive. This would also provide users with the ability to manually disable sync at any time.
+  Replace the current "Sync Now" button with a toggle button that clearly indicates when synchronization is active or inactive. This would also provide users with the ability to manually disable sync at any time.
+
+- **Support for Additional Streaming Services:**  
+  Expand support to include other popular streaming platforms such as Hulu, Amazon Prime Video, Disney+, HBO Max, and others. This would allow VideoSync to synchronize video playback across a broader range of services.
 
 ## Troubleshooting
 
