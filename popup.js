@@ -5,8 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const pauseButton = document.getElementById("pauseButton");
     const scrubber = document.getElementById("scrubber");
     const timeDisplay = document.getElementById("timeDisplay");
+    const scrubberContainer = document.getElementById("scrubber-container");
+    const noVideoMessage = document.getElementById("no-video-message");
 
-    if (!playButton || !pauseButton || !scrubber) {
+    if (!playButton || !pauseButton || !scrubber || !timeDisplay || !scrubberContainer || !noVideoMessage) {
         console.error("One or more elements not found in popup!");
         return;
     }
@@ -35,11 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // When scrubber is used, send a "syncSeek" message with the new time
+    // Debounce the slider input to prevent spamming seek commands (especially important for Netflix)
+    let seekDebounceTimer = null;
     scrubber.addEventListener("input", (e) => {
         const newTime = parseFloat(e.target.value);
-        console.log("Scrubber adjusted. Seeking to:", newTime);
-        chrome.runtime.sendMessage({ action: "syncSeek", time: newTime });
+        clearTimeout(seekDebounceTimer);
+        // Set a debounce delay of 300ms (adjust if needed)
+        seekDebounceTimer = setTimeout(() => {
+            console.log("Debounced scrubber adjusted. Seeking to:", newTime);
+            chrome.runtime.sendMessage({ action: "syncSeek", time: newTime });
+        }, 300);
     });
 
     // Periodically update the slider (and time display) with the video's current time
@@ -48,10 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
             if (tabs[0]) {
                 // Ask the content script for the current time and duration
                 chrome.tabs.sendMessage(tabs[0].id, { action: "getTime" }, (response) => {
-                    if (chrome.runtime.lastError || !response) return;
-                    
-                    const { currentTime, duration } = response;
-                    if (duration && !isNaN(duration)) {
+                    if (
+                        chrome.runtime.lastError ||
+                        !response ||
+                        !response.duration ||
+                        isNaN(response.duration) ||
+                        response.duration <= 0
+                    ) {
+                        // Hide scrubber if no valid video info is returned
+                        scrubberContainer.style.display = "none";
+                        noVideoMessage.style.display = "none";
+                    } else {
+                        // Valid video data found; show the scrubber and update time display.
+                        scrubberContainer.style.display = "block";
+                        noVideoMessage.style.display = "none";
+                        const { currentTime, duration } = response;
                         scrubber.max = duration;
                         scrubber.value = currentTime;
                         timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
@@ -61,9 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }, 500);
 
+    // Helper function to format time as mm:ss.
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
-        return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
     }
 });
