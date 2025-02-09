@@ -16,7 +16,7 @@ VideoSync is a Chrome extension designed to synchronize video playback between N
   The extension computes an offset between Netflix's and YouTube's playback times and adjusts YouTube's timeline accordingly.
 
 - **Dynamic State Updates:**  
-  Continuous monitoring of video state (current time, play/pause, seeking) on both platforms ensures up-to-date synchronization.
+  Continuous monitoring of video state (current time, play/pause, and seeking) on both platforms ensures up-to-date synchronization.
 
 ## How It Works
 
@@ -54,6 +54,15 @@ VideoSync is a Chrome extension designed to synchronize video playback between N
 3. Click the VideoSync extension icon to open the popup.
 4. Click "Sync Now" to initiate synchronization.
 5. Playback actions such as play, pause, and seek on Netflix will be mirrored on YouTube.
+
+## Future Improvements
+
+- **Boundary Handling:**  
+  - Detect if the user skips the Netflix movie so far backward that the computed YouTube time becomes negative. In such cases, auto-sync should be disabled and an error message should be displayed.
+  - Handle the opposite case where the user skips too far ahead, causing the computed YouTube time to exceed the video's duration. Auto-sync should similarly be disabled with appropriate user feedback.
+
+- **Sync Toggle Button:**  
+  Replace the current "Sync" button with a toggle button that clearly indicates when synchronization is active or inactive. This would also provide users with the ability to manually disable sync at any time.
 
 ## Troubleshooting
 
