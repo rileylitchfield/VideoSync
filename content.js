@@ -138,6 +138,9 @@ if (window.location.href.includes("netflix.com")) {
 
     // Throttled update for timeupdate events to reduce message frequency.
     function sendNetflixStateThrottled() {
+      // Only send an update from timeupdate events if the video is playing.
+      // This avoids sending duplicate paused state messages.
+      if (video.paused) return; 
       const currentTime = video.currentTime;
       if (Math.abs(currentTime - lastUpdate) > 0.3) {
         lastUpdate = currentTime;
@@ -147,9 +150,12 @@ if (window.location.href.includes("netflix.com")) {
 
     // Add event listeners:
     video.addEventListener("timeupdate", sendNetflixStateThrottled);
-    video.addEventListener("play", sendStateUpdate);
+    video.addEventListener("play", () => {
+      sendStateUpdate();
+      lastUpdate = video.currentTime; // Prevent immediate duplicate update from a timeupdate event.
+    });
     video.addEventListener("pause", sendStateUpdate);
-    video.addEventListener("seeked", sendStateUpdate); // Added to ensure that after seeking (skipping) the correct state is sent.
+    video.addEventListener("seeked", sendStateUpdate); // Ensures a state update is sent after seeking.
   });
 }
 
