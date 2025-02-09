@@ -1,99 +1,74 @@
-# VideoSync Extension
+# Netflix-YouTube Sync Extension
 
-VideoSync is a Chrome extension that allows you to control video playback across multiple tabs simultaneously. Whether you're watching videos on YouTube or Netflix, the extension lets you play, pause, or seek through videos on all supported tabs at the same time from a central popup.
+## Overview
 
-## Features
+The Netflix-YouTube Sync extension lets you synchronize playback between Netflix and YouTube. **Synchronization is manual**—you must click the "Sync" button to lock the two videos together before any changes in Netflix are reflected on YouTube.
 
-- **Synchronized Play/Pause:**  
-  Start or pause playback on all open tabs with a single click.
+## Key Features
+
+- **Manual Sync Activation:**  
+  The extension will not automatically sync the two videos. Instead, you must click the "Sync" button to record the current offset between Netflix and YouTube. Once set, sync updates will be active.
+
+- **Continuous Sync Updates:**  
+  After sync activation, any time change on Netflix (either forward or backward skips) is immediately reflected in YouTube. The YouTube video's `currentTime` is updated to:
   
-- **Scrubber (Seek) Control:**  
-  - Use an `<input type="range">` slider to control the current playback position.
-  - When you adjust the slider, the extension sends a seek command to all supported tabs so every video jumps by the same amount.
+  ```
+  targetTime = netflix_currentTime + syncOffset
+  ```
   
-- **Real-Time Time Display:**  
-  The popup shows the current playback time and total duration (formatted as mm:ss) by polling the active tab.
+  with negative times clamped to zero. All updates are applied unconditionally—there is no threshold logic to disable syncing.
 
-## File Overview
-
-- **`manifest.json`**  
-  Defines the extension's configuration, permissions, content scripts, background service worker, and host permissions for sites such as YouTube and Netflix.
-
-- **`background.js`**  
-  Acts as the central hub that receives commands from the popup and broadcasts them to all relevant tabs. It handles both play/pause (`syncPlayPause`) and seek (`syncSeek`) actions.
-
-- **`popup.html`**  
-  The popup UI where users control video playback. It contains buttons for play and pause, as well as a scrubber slider for seeking through the video.
-
-- **`popup.js`**  
-  Handles user interactions from the popup. It sends messages to `background.js` which then relays the commands to the content scripts on each matching tab.
-
-- **`popup.css`**  
-  Provides CSS styling to make the popup's buttons and slider visually appealing and user-friendly.
-
-- **`content.js`**  
-  Injected into supported pages (like YouTube and Netflix). Listens for messages from the background script to perform actions on the video element, including playing, pausing, seeking, and reporting the video's current time and duration.
-
-## Installation
-
-1. **Clone or Download the Repository:**
-   ```bash
-   git clone https://github.com/your-username/video-sync-extension.git
-   ```
-   
-2. **Load as an Unpacked Extension:**
-   - Open Chrome and navigate to `chrome://extensions/`.
-   - Enable "Developer Mode" by toggling the switch in the top-right corner.
-   - Click "Load unpacked" and select the extension's directory.
-
-3. **Verify Installation:**
-   The extension icon should appear in your Chrome toolbar.
-
-## Usage
-
-1. **Open a Supported Video Site:**
-   - Navigate to a page with a video, like YouTube or Netflix.
-
-2. **Control Playback:**
-   - Click the extension icon to display the popup.
-   - Use the **Play** and **Pause** buttons to control video playback across all matching tabs.
-   - Adjust the **Scrubber Slider:**  
-     Drag the slider to a new position and all videos (across all supported tabs) will seek to that new time.
-   - The current time and total duration are displayed in a `mm:ss / mm:ss` format below the scrubber.
+- **Play/Pause Synchronization:**  
+  The extension also updates the YouTube player's play/pause state to match Netflix:
+  
+  - If Netflix is playing, YouTube starts playing.
+  - If Netflix is paused, YouTube is paused.
+  
+  This ensures that both videos remain in sync after a sync is initiated.
 
 ## How It Works
 
-- **Message Broadcasting:**  
-  Actions in the popup (like play, pause, or seek) send messages (e.g., `syncPlayPause` or `syncSeek`) to the background service worker (`background.js`), which then broadcasts the appropriate command (e.g., `play`, `pause`, or `seek`) to all tabs that match the specified URLs.
+1. **Netflix State Updates:**  
+   The Netflix content script sends `netflixState` messages containing the current playback time and paused state. These messages are forwarded (via the background script) to the YouTube content script.
 
-- **Content Script Control:**  
-  Each content script (`content.js`), injected into supported sites, listens for these messages and interacts with the page's video element accordingly. This ensures synchronized control over multiple tabs.
+2. **Activation of Sync:**  
+   On the YouTube side (in `content.js`), syncing is disabled by default. When you click the "Sync" button, a `setSyncOffset` message is sent. This records the offset and enables syncing.
 
-## Customization
+3. **Processing Netflix State on YouTube:**  
+   Once syncing is active:
+   - The YouTube script computes the target time using the Netflix current time plus the sync offset.
+   - It sets the YouTube video's `currentTime` to the computed target without any threshold-based verification.
+   - It enforces the play/pause state to match Netflix.
 
-- **UI Adjustments:**  
-  Modify `popup.css` to change the appearance of the popup interface.
+   *Note:* This configuration has removed any manual seeking or threshold logic. Every Netflix state change (even large jumps) will be immediately pushed to YouTube.
 
-- **Adding More Features:**  
-  Extend the functionality (such as volume controls or additional video controls) by updating `popup.js` and `content.js` as needed. You can also adjust the list of supported sites via the host permissions in `manifest.json`.
+## Installation & Usage
+
+1. **Installation:**
+   - Clone this repository.
+   - Open Chrome and navigate to `chrome://extensions/`.
+   - Enable "Developer mode."
+   - Click "Load unpacked" and select the repository directory.
+
+2. **Usage:**
+   - Open Netflix in one tab and start playing a video.
+   - Open YouTube in another tab.
+   - Click the "Sync" button in the extension's UI. This will record the current offset between the Netflix and YouTube videos and activate syncing.
+   - After syncing is activated, any skip (forward or backward) or play/pause update in Netflix is immediately reflected in the YouTube video.
 
 ## Troubleshooting
 
-- **Out-of-Sync Values:**  
-  Make sure that video metadata (e.g., duration and current time) is fully loaded before sending commands. The content script logs raw values for debugging.
-  
-- **No Video Found:**  
-  If the extension logs that no video element was found, verify that you are on a supported video site and that the video element is properly accessible using the current selector in your content script.
+- **Sync Does Not Activate:**  
+  Make sure you click the "Sync" button to initiate synchronization. Without this step, Netflix state updates are ignored on the YouTube side.
 
-- **Message Passing Issues:**  
-  Use Chrome Developer Tools (F12) to inspect logs in the background, popup, and content scripts to troubleshoot any message-sending errors.
+- **Playback Issues:**  
+  Since all time updates are applied unconditionally, if any unexpected pauses occur on YouTube (usually during backwards skips), check the underlying state updates from Netflix. These issues might be transient or related to how Netflix handles backward seeks.
 
-## Contributing
-
-Contributions are welcome! Feel free to fork this repository and submit a pull request with improvements or new features. For major changes, please open an issue to discuss your ideas.
+- **Sync Permanence:**  
+  The current configuration removes any threshold that disables sync. Once you activate sync, subsequent Netflix state updates (regardless of how large) will always update YouTube.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
 
 Happy syncing! 
