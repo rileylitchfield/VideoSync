@@ -70,15 +70,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           console.log("+++ [YouTube] Video time within threshold; no update required.");
         }
 
-        // Mimic play/pause state.
-        if (message.paused && !video.paused) {
-          console.log("+++ [YouTube] Pausing video to match Netflix state.");
-          video.pause();
-        } else if (!message.paused && video.paused) {
-          console.log("+++ [YouTube] Playing video to match Netflix state.");
-          video.play().catch(err => console.error("+++ [YouTube] Error while trying to play video:", err));
-        } else {
-          console.log("+++ [YouTube] No play/pause adjustment needed.");
+        // Only mirror play/pause state if Netflix is not seeking
+        if (!message.isSeeking) {
+          if (message.paused && !video.paused) {
+            console.log("+++ [YouTube] Pausing video to match Netflix state.");
+            video.pause();
+          } else if (!message.paused && video.paused) {
+            console.log("+++ [YouTube] Playing video to match Netflix state.");
+            video.play().catch(err => console.error("+++ [YouTube] Error while trying to play video:", err));
+          } else {
+            console.log("+++ [YouTube] No play/pause adjustment needed.");
+          }
         }
         sendResponse({ status: "netflixState processed" });
         return true;
