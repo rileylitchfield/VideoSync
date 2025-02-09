@@ -1,8 +1,8 @@
-# Netflix-YouTube Sync Extension
+# VideoSync Extension
 
 ## Overview
 
-The Netflix-YouTube Sync extension lets you synchronize playback between Netflix and YouTube. **Synchronization is manual**—you must click the "Sync" button to lock the two videos together before any changes in Netflix are reflected on YouTube.
+The VideoSync extension lets you synchronize playback between Netflix and YouTube. **Synchronization is manual**—you must click the "Sync" button to lock the two videos together before any changes in Netflix are reflected on YouTube.
 
 ## Key Features
 
