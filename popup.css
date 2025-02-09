@@ -1,12 +1,68 @@
+/* General popup styling */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
     padding: 20px;
-    width: 200px;
+    color: #333;
+    width: 350px;
+    box-sizing: border-box;
 }
 
+div {
+  margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Header styling */
 h2 {
-    color: #333;
+    font-size: 20px;
+    color: #444;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+/* Buttons container styling */
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Button styling */
+button {
+    background-color: #0078D7;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin: 0 auto 15px;
+}
+
+button:hover {
+    background-color: #005a9e;
+}
+
+/* Instruction paragraph */
+p {
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+    color: #555;
+    margin: 10px 0 0;
 }
 
 .buttons {
@@ -57,4 +113,27 @@ button {
 
 #timeDisplay {
     margin-top: 10px;
+}
+
+/* Common message styling */
+.message {
+    text-align: left;
+    font-family: sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Success message styling */
+.success-message {
+    border: 1px solid #28a745;
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+/* Error message styling */
+.error-message {
+    border: 1px solid #d9534f;
+    background-color: #f2dede;
+    color: #a94442;
 } 

@@ -4,29 +4,15 @@
   <meta charset="UTF-8">
   <title>VideoSync</title>
   <link rel="stylesheet" type="text/css" href="popup.css">
-  <script src="popup.js" defer></script>
 </head>
 <body>
+  <div class="container">
   <h2>VideoSync</h2>
-  <div class="buttons">
-    <button id="playButton"><svg width="30" height="30" viewBox="0 0 24 24" fill="black">
-        <path d="M8 5v14l11-7z"/>
-    </svg>
-    </button>
-      <button id="pauseButton"><svg width="30" height="30" viewBox="0 0 24 24" fill="black">
-        <path d="M6 19h4V5H6zm8-14v14h4V5h-4z"/>
-    </svg>
-    </button>
+    <button id="syncButton">Sync Now</button>
   </div>
-  <br><br>
-  <!-- Container for the scrubber slider and time display -->
-  <div id="scrubber-container">
-    <input type="range" id="scrubber" min="0" max="100" step="0.1" value="0">
-    <div id="timeDisplay"></div>
-  </div>
-  <!-- Message shown when no video is detected in the active tab -->
-  <div id="no-video-message" style="display: none;">
-    Video must be in view for seeking feature.
-  </div>
+  <p>
+    Make sure both Netflix and YouTube are open and that both videos are either playing or paused. When ready, click "Sync Now" to store the offset between the Netflix and YouTube timelines. Play, Pause, and Skip functions are mirrored from the Netflix film to the YouTube video.
+  </p>
+  <script src="popup.js" defer></script>
 </body>
 </html>
